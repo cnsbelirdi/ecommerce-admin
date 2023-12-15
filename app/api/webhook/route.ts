@@ -1,10 +1,12 @@
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+
 import { stripe } from "@/lib/stripe";
 import prismadb from "@/lib/prismadb";
 
 export async function POST(req: Request) {
+  console.log("webhook");
   const body = await req.text();
   const signature = headers().get("Stripe-Signature") as string;
 
@@ -14,7 +16,7 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRE!
+      process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (error: any) {
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });

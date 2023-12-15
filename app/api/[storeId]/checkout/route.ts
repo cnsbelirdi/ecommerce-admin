@@ -1,17 +1,17 @@
-import prismadb from "@/lib/prismadb";
-import { NextResponse } from "next/server";
-import { Product } from "@prisma/client";
 import Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import { NextResponse } from "next/server";
 
-const corsHeader = {
+import { stripe } from "@/lib/stripe";
+import prismadb from "@/lib/prismadb";
+
+const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
 export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeader });
+  return NextResponse.json({}, { headers: corsHeaders });
 }
 
 export async function POST(
@@ -20,8 +20,9 @@ export async function POST(
 ) {
   const { productIds } = await req.json();
 
-  if (!productIds || productIds.length === 0)
+  if (!productIds || productIds.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
+  }
 
   const products = await prismadb.product.findMany({
     where: {
@@ -79,7 +80,7 @@ export async function POST(
   return NextResponse.json(
     { url: session.url },
     {
-      headers: corsHeader,
+      headers: corsHeaders,
     }
   );
 }
